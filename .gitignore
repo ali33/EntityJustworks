@@ -1,3 +1,4 @@
+.vs
 *.pdb
 *.jrs
 *.chk
@@ -7,6 +8,7 @@
 *.suo
 *.bak
 *.zip
+*.bat
 /EntityJustWorks.SQL/bin
 /EntityJustWorks.SQL/obj
 /EntityJustworksGUI/bin
