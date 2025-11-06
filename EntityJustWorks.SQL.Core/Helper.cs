@@ -15,7 +15,7 @@ using System.Linq;
 using System.Data;
 using System.Collections.Generic;
 
-namespace EntityJustWorks.SQL
+namespace EntityJustWorks.SQL.Core
 {
 	/// <summary>
 	/// Conversion, validation, sanitization helper functions.
@@ -77,7 +77,7 @@ namespace EntityJustWorks.SQL
 		/// <param name="postFix">The string to postfix the result.</param>			
 		public static string ListToDelimitedString<T>(IEnumerable<T> collection, string prefix, string delimiter, string postFix)
 		{
-			if (IsCollectionEmpty<T>(collection)) return string.Empty;
+			if (IsCollectionEmpty(collection)) return string.Empty;
 
 			StringBuilder result = new StringBuilder();
 			foreach (T item in collection)
@@ -85,7 +85,7 @@ namespace EntityJustWorks.SQL
 				if (result.Length != 0)
 					result.Append(delimiter);	// Add comma
 
-				result.Append(EscapeSingleQuotes(item as String));
+				result.Append(EscapeSingleQuotes(item as string));
 			}
 			if (result.Length < 1) return string.Empty;
 
@@ -111,7 +111,7 @@ namespace EntityJustWorks.SQL
 		/// <returns>True if the specified Enumerable collection is null or empty, otherwise false.</returns>
 		public static bool IsCollectionEmpty<T>(IEnumerable<T> iInput)
 		{
-			return (iInput == null || iInput.Count() < 1) ? true : false;
+			return iInput == null || iInput.Count() < 1 ? true : false;
 		}
 
 		/// <summary>

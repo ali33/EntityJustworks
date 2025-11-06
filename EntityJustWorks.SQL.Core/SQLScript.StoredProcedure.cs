@@ -15,6 +15,7 @@ using System.Linq;
 using System.Data;
 using System.Collections;
 using System.Collections.Generic;
+using EntityJustWorks.SQL.Core;
 
 // EntityJustWorks.SQL - Provides entity/object to data mapping functions for SQL repositories.
 namespace EntityJustWorks.SQL

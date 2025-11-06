@@ -13,7 +13,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace EntityJustWorks.SQL
+namespace EntityJustWorks.SQL.Core
 {
 	/// <summary>
 	/// SQL Query Helper Class

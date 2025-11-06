@@ -18,7 +18,7 @@ using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 
-namespace EntityJustWorks.SQL
+namespace EntityJustWorks.SQL.Core
 {
     public static class Table
     {
@@ -41,7 +41,7 @@ namespace EntityJustWorks.SQL
             {
                 foreach (T classObject in classInstanceCollection)
                 {
-                    Table.FromClassInstance(result, classObject);
+                    FromClassInstance(result, classObject);
                 }
             }
             return result;// Returns and empty DataTable with columns defined (table schema)
@@ -170,7 +170,7 @@ namespace EntityJustWorks.SQL
                 if (!checkValid || IsValidTableData(dataTable, kvp.Key))
                 {
                     object value = kvp.Value;
-                    row[kvp.Key] = (value == null) ? DBNull.Value : value;
+                    row[kvp.Key] = value == null ? DBNull.Value : value;
                 }
             }
             dataTable.Rows.Add(row);
@@ -191,7 +191,7 @@ namespace EntityJustWorks.SQL
                 if (IsValidTableData(dataTable, property))
                 {
                     object value = property.GetValue(classObject, null);
-                    row[property.Name] = (value == null) ? DBNull.Value : value;
+                    row[property.Name] = value == null ? DBNull.Value : value;
                 }
             }
             dataTable.Rows.Add(row);
@@ -201,12 +201,12 @@ namespace EntityJustWorks.SQL
 
         private static bool IsValidTableData(DataTable dataTable, string columnName)
         {
-            return (dataTable.Columns.Contains(columnName) && dataTable.Columns[columnName] != null);
+            return dataTable.Columns.Contains(columnName) && dataTable.Columns[columnName] != null;
         }
 
         private static bool IsValidTableData(DataTable dataTable, PropertyInfo property)
         {
-            return (dataTable.Columns.Contains(property.Name) && dataTable.Columns[property.Name] != null);
+            return dataTable.Columns.Contains(property.Name) && dataTable.Columns[property.Name] != null;
         }
 
         private static bool IsValidObjectData(PropertyInfo Property, List<string> ColumnNames, DataRow Row)
@@ -214,7 +214,7 @@ namespace EntityJustWorks.SQL
             if (Property == null || // Null check
                 !Property.CanWrite ||  // Make sure property isn't read only
                 !ColumnNames.Contains(Property.Name) || // If property is a column name
-                Row[Property.Name] == System.DBNull.Value) // Don't copy over DBNull
+                Row[Property.Name] == DBNull.Value) // Don't copy over DBNull
             {
                 return false;
             }
@@ -278,7 +278,7 @@ namespace EntityJustWorks.SQL
                         if (!IsValidObjectData(property, columnNames, row))
                             continue;
 
-                        object propertyValue = System.Convert.ChangeType(
+                        object propertyValue = Convert.ChangeType(
                                 row[property.Name],
                                 property.PropertyType
                             );

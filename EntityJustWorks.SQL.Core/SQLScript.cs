@@ -9,12 +9,13 @@
  *    https://github.com/AdamWhiteHat/EntityJustworks
  * 
  */
+using EntityJustWorks.SQL.Core;
 using System;
-using System.Text;
-using System.Linq;
-using System.Data;
-using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Windows.Input;
 
 // EntityJustWorks.SQL - Provides entity/object to data mapping functions for SQL repositories.
 namespace EntityJustWorks.SQL
@@ -23,7 +24,7 @@ namespace EntityJustWorks.SQL
 	/// SQL Script Generation Class
 	/// </summary>
 	public static partial class SQLScript
-	{
+	{ 
 		/// <summary>
 		/// Creates a SQL script that inserts the values of the specified classes' public properties into a table.
 		/// </summary>

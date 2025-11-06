@@ -19,7 +19,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EntityJustWorks.SQL
+namespace EntityJustWorks.SQL.Core
 {
 	/// <summary>
 	/// C# Code Generation Class
@@ -33,7 +33,7 @@ namespace EntityJustWorks.SQL
 
 			string result = string.Empty;
 
-			CodeNamespace codeNamespace = Code.CreateCodeNamespace(dataTable);
+			CodeNamespace codeNamespace = CreateCodeNamespace(dataTable);
 
 			var utf8Encoding = new UTF8Encoding(false, true);
 

@@ -16,7 +16,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 
-namespace EntityJustWorks.SQL
+namespace EntityJustWorks.SQL.Core
 {
 	/// <summary>
 	/// Convert to and from a CLR class instance
@@ -51,7 +51,7 @@ namespace EntityJustWorks.SQL
 		/// <returns>A DataTable who's DataColumns match the name and type of each class T's public properties.</returns>
 		public static DataTable ToDataTable<T>(params T[] classInstanceCollection) where T : class
 		{
-			return Table.FromClassInstanceCollection<T>(classInstanceCollection);
+			return Table.FromClassInstanceCollection(classInstanceCollection);
 		}
 
 		/// <summary>
