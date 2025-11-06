@@ -87,6 +87,94 @@ namespace EntityJustWorks.SQL
                 result.Columns.Add(column);
             }
             return result;
+        } 
+        
+        /// <summary>
+        /// Creates a DataTable from a List of Directories. The DataColumns of the table will match the name and type of the public properties.
+        /// </summary>
+        /// <param name="dictionaries"></param>
+        /// <returns>A DataTable who's DataColumns match the name and type of each dictionary key.</returns>
+        public static DataTable FromDictionries(string tableName, IEnumerable<IDictionary<string, object>> dictionaries, bool fillData = true)
+        {
+            DataTable result = new DataTable(tableName);
+
+            var sample = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var dict in dictionaries)
+            {
+                foreach (var kv in dict)
+                {
+                    var value = kv.Value;
+                    if (value == null || value == DBNull.Value)
+                        continue;
+
+                    // Nếu key chưa tồn tại thì thêm (giữ lại giá trị đầu tiên)
+                    if (!sample.ContainsKey(kv.Key))
+                        sample[kv.Key] = value;
+                }
+            }
+
+
+            foreach (var kvp in sample)
+            {
+                DataColumn column = new DataColumn();
+                column.ColumnName = kvp.Key;
+                var valueType = kvp.Value.GetType();
+
+                if (Helper.IsNullableType(valueType))
+                {
+                    if (valueType.IsGenericType)
+                    {
+                        // If Nullable<> and Generic, this is how we get the underlying Type...
+                        column.DataType = valueType.GenericTypeArguments.FirstOrDefault();
+                    }
+                    else
+                    {
+                        column.DataType = valueType.UnderlyingSystemType;
+                    }
+
+                    column.AllowDBNull = true;
+                }
+                else
+                {   // True by default, so set it false
+                    column.DataType = valueType;
+                    column.AllowDBNull = false;
+                }
+
+                // Add column
+                result.Columns.Add(column);
+            }
+
+            if (fillData)
+            {
+                foreach (var dict in dictionaries)
+                {
+                    result = FromDictionary(result, dict, false);
+                }
+            }
+
+            return result;
+        }
+        /// <summary>
+        /// Adds a DataRow to a DataTable from the Dictionary Key Value Pairs
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <param name="dict"></param>
+        /// <param name="checkValid"></param>
+        /// <returns></returns>
+        public static DataTable FromDictionary(DataTable dataTable, IDictionary<string, object> dict, bool checkValid = true)
+        {
+            DataRow row = dataTable.NewRow();
+            foreach (var kvp in dict)
+            {
+                if (!checkValid || IsValidTableData(dataTable, kvp.Key))
+                {
+                    object value = kvp.Value;
+                    row[kvp.Key] = (value == null) ? DBNull.Value : value;
+                }
+            }
+            dataTable.Rows.Add(row);
+            return dataTable;
         }
 
         /// <summary>
@@ -111,6 +199,11 @@ namespace EntityJustWorks.SQL
             return dataTable;
         }
 
+        private static bool IsValidTableData(DataTable dataTable, string columnName)
+        {
+            return (dataTable.Columns.Contains(columnName) && dataTable.Columns[columnName] != null);
+        }
+
         private static bool IsValidTableData(DataTable dataTable, PropertyInfo property)
         {
             return (dataTable.Columns.Contains(property.Name) && dataTable.Columns[property.Name] != null);
@@ -126,6 +219,31 @@ namespace EntityJustWorks.SQL
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Fill List of dictionaries from rows of a DataTable where the name of the property matches the column name from that DataTable.
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
+        public static IList<IDictionary<string, object>> ToDictionaries(DataTable dataTable)
+        {
+            if (!Helper.IsValidDatatable(dataTable))
+                return new List<IDictionary<string, object>>();
+
+            IList<IDictionary<string, object>> result = new List<IDictionary<string, object>>(dataTable.Rows.Count);
+            var columnNames = dataTable.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                foreach (var column in columnNames)
+                {
+                    if (row[column] == DBNull.Value)
+                        continue;
+                    dict[column] = row[column];
+                }
+            }
+            return result;
         }
 
         /// <summary>
